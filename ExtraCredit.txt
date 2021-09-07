@@ -1,0 +1,2 @@
+Updated the display so that when two players are on top of each other, one will shrink to expose the other player beneath them. Miss Scarlet
+(who is always the human player) will always be the larger player when this happens.

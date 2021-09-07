@@ -1,0 +1,3 @@
+
+Error: BadConfigFormatException. Bad configuration for file. Please check your CTest_ClueLegendBadFormat.txt
+

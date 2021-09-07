@@ -1,0 +1,257 @@
+commit 9fdeb21f0422a557fec0c1b8029401a9a2ffb634
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:38:55 2019 -0600
+
+    rather than opening all files at once, read in each file individually, closing one to open the next
+
+commit 3251adfcbd6dacb18f81c130c559126cdb7ee83f
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:35:45 2019 -0600
+
+    we had two repeat methods in Board that did the exact same thing, refactored our Board class and some tests to work with just the better method
+
+commit d249fe19a97b66a0692941f759bbaeffba8a7893
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:33:47 2019 -0600
+
+    initialized door equal to DoorDirection.NONE in BoardCell class rather than making every door equal to DoorDirection.NONE by iterating through every cell in order to add efficiency
+
+commit 1d060eb74762934aefdeff34b6429b920168e638
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:31:39 2019 -0600
+
+    fixed ambiguous comments in setConfigFiles() to make it more clear how we are reading in the files
+
+commit b3b83fbb9c989fe60db90a547c8a3384b252a132
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:29:47 2019 -0600
+
+    added switch statements to isWalkway() in BoardCell to make entering and exiting doors possible only in the specified direction
+
+commit a10851c8174b9cf85d212afbeccba09a212f4d52
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:27:41 2019 -0600
+
+    updated numRows and numColumns to adjust to the file sizes rather than being hard coded
+
+commit 7df9023d9e89011c78845c924e5f39edb21f0370
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:26:26 2019 -0600
+
+    Created an isWalkway() function in BoardCell to test if the cell is a walkable tile
+
+commit 1347e68a7bf474656dd5a8a1ab6b37ac07ee007f
+Author: dgao1 <dgao1@mymail.mines.edu>
+Date:   Thu Oct 24 11:24:32 2019 -0600
+
+    Changed file input for the board to take rows one row at a time with println() and used split() to get individual cells
+
+
+BEFORE:
+	public void setConfigFiles(String string, String string2) throws BadConfigFormatException, FileNotFoundException {
+		// Set boardFile and roomFile
+		boardConfigFile = string;
+		roomConfigFile = string2;
+		
+		// Read in the two files
+		FileReader reader = new FileReader(string);
+		Scanner boardStuff = new Scanner (reader);
+		FileReader reader1 = new FileReader(string2);
+		Scanner legendStuff = new Scanner(reader1);
+		
+		// change delimiters to commas and newline
+		boardStuff.useDelimiter(",|\r\n");
+		legendStuff.useDelimiter(",|\r\n");
+		
+		// read in the board tile by tile
+		for (int i=0; i < numRows; i++) {
+			if (!boardStuff.hasNext()) { break; }
+			
+			for (int j=0; j < numColumns; j++) {
+				if (!boardStuff.hasNext()) { break; }
+				// Get the cell symbol
+				String cellLabel = boardStuff.next();
+				char cellLegend = cellLabel.charAt(0);
+
+				// put cell in the map
+				BoardCell cell = new BoardCell(i, j, cellLegend);
+				
+				// by default, have the door direction be NONE
+				cell.setDoor(DoorDirection.NONE);
+				
+				// Get direction if a door is present
+				if (cellLabel.length() >= 2) {
+					char cellDirection = cellLabel.charAt(1);
+					switch (cellDirection) {
+					case 'U':
+						cell.setDoor(DoorDirection.UP);
+						break;
+					case 'D':
+						cell.setDoor(DoorDirection.DOWN);
+						break;
+					case 'L':
+						cell.setDoor(DoorDirection.LEFT);
+						break;
+					case 'R':
+						cell.setDoor(DoorDirection.RIGHT);
+						break;
+					case 'N':
+						cell.setDoor(DoorDirection.NONE);
+						break;
+						
+					}
+				}
+				
+				board[i][j] = cell;
+			}
+		}
+		boardStuff.close();
+		
+		// read in the legend word by word
+		while (legendStuff.hasNext()) {
+			// Gets the symbol
+			if (!legendStuff.hasNext()) { break; }
+			String legendSymbol = legendStuff.next();
+			Character actualLegendSymbol = legendSymbol.charAt(0);
+			
+			// Gets the description
+			String legendDescription = legendStuff.next();
+			if (!legendStuff.hasNext()) { break; }
+			legendDescription = legendDescription.substring(1); // Remove the space
+			
+			if (!legendStuff.hasNext()) { break; }
+			legend.put(actualLegendSymbol, legendDescription); // put the symbol and description into map
+			
+			// Gets the type (currently not using this, so this is read and then skipped)
+			if (!legendStuff.hasNext()) { break; }
+			String legendType = legendStuff.next();
+			
+			legendType = legendType.substring(1); // Remove the space
+			
+			type.put(actualLegendSymbol, legendType);
+		}
+		legendStuff.close();
+		
+	}
+
+
+
+
+
+AFTER:
+	public void setConfigFiles(String string, String string2) throws BadConfigFormatException, FileNotFoundException {
+		// Set boardFile and roomFile
+		boardConfigFile = string;
+		roomConfigFile = string2;
+
+		// Read in the two files
+		FileReader reader = new FileReader(string);
+		Scanner boardStuff = new Scanner (reader);
+
+
+
+		// count the number of rows
+		numRows = 0;
+		while(boardStuff.hasNext()) {
+			boardStuff.nextLine();
+			numRows++;
+		}
+
+		// set the boardStuff reader back to the beginning
+		boardStuff.close();
+		FileReader reader2 = new FileReader(string);
+		Scanner boardStuff2 = new Scanner (reader2);
+
+		// read in the board tile by tile
+		for (int i=0; i < numRows; i++) {
+			if (!boardStuff2.hasNext()) { break; }
+
+			// Get entire row and store it in an array
+			String cellLabel = boardStuff2.nextLine();
+			String[] currentStringRow = cellLabel.split(",");
+
+			if (i == 0) {
+				// Get numColumns, but only the first time
+				numColumns = currentStringRow.length;
+			}
+			
+			// Make an array of BoardCell
+			BoardCell[] currentBoardRow = new BoardCell[numColumns];
+
+
+			for (int j = 0; j < numColumns; j++) {
+
+				if (currentStringRow.length != numColumns) {
+					continue;
+				}
+				
+				// Get the cell symbol
+				char cellLegend = currentStringRow[j].charAt(0);
+
+				currentBoardRow[j] = new BoardCell(j, i, cellLegend);
+
+				// Get direction if a door is present
+				if (currentStringRow[j].length() >= 2) {
+					char cellDirection = currentStringRow[j].charAt(1);
+					switch (cellDirection) {
+					case 'U':
+						currentBoardRow[j].setDoor(DoorDirection.UP);
+						break;
+					case 'D':
+						currentBoardRow[j].setDoor(DoorDirection.DOWN);
+						break;
+					case 'L':
+						currentBoardRow[j].setDoor(DoorDirection.LEFT);
+						break;
+					case 'R':
+						currentBoardRow[j].setDoor(DoorDirection.RIGHT);
+						break;
+					case 'N':
+						currentBoardRow[j].setDoor(DoorDirection.NONE);
+						break;
+					}
+				}
+
+				// put row in the map
+				board[i] = currentBoardRow;
+
+
+
+
+			}
+		}
+
+		boardStuff2.close();
+
+		// Open Legend file
+		FileReader reader1 = new FileReader(string2);
+		Scanner legendStuff = new Scanner(reader1);
+
+		legendStuff.useDelimiter(",|\r\n");
+		
+		// read in the legend word by word
+		while (legendStuff.hasNext()) {
+			// Gets the symbol
+			if (!legendStuff.hasNext()) { break; }
+			String legendSymbol = legendStuff.next();
+			Character actualLegendSymbol = legendSymbol.charAt(0);
+
+			// Gets the description
+			String legendDescription = legendStuff.next();
+			if (!legendStuff.hasNext()) { break; }
+			legendDescription = legendDescription.substring(1); // Remove the space
+
+			if (!legendStuff.hasNext()) { break; }
+			legend.put(actualLegendSymbol, legendDescription); // put the symbol and description into map
+
+			// Gets the type (currently not using this, so this is read and then skipped)
+			if (!legendStuff.hasNext()) { break; }
+			String legendType = legendStuff.next();
+
+			legendType = legendType.substring(1); // Remove the space
+
+			type.put(actualLegendSymbol, legendType);
+		}
+		legendStuff.close();
+
+	}

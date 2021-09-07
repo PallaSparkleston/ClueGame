@@ -1,0 +1,11 @@
+K, Kitchen, Card
+L, Library, Card
+D, Dining Room, Card
+B, Bedroom, Card
+M, Bathroom, Card
+A, Arcade, Card
+P, Piano Room, Card
+O, Observatory, Card
+T, Theater, Card
+X, Closet, Other
+W, Walkway, Other

@@ -1,0 +1,26 @@
+We have 11 different tile identities: The Arcade, The Observatory, The Piano Room, The Bathroom, The Bedroom, The Dining Room, The Kitchen, The Library, The Theater, The Walkways, and the Closet
+
+Our board dimensions are 20 x 20.
+
+The library has a door that opens right at (11, 16).
+The piano room has a door that opens down at (3,6).
+The arcade has a door that opens left at (15,14).
+The bathroom has a door that opens up at (11,19).
+At (15,15) there is an inaccessible arcade tile which appears right next to an arcade door that opens left.
+At (15,13) there is a walkway that is right next to an arcade door that opens left.
+
+We have a total of 14 doors on our board.
+
+At (0,0), we have the start of the observatory.
+At (0,4), we have a walkway between two room tiles.
+At (0,5), we have the start of the piano room.
+At (0,13), we have the start of the theater.
+At (0,19), we have the end of the bedroom.
+At (19,0), we have the start of the kitchen.
+At (19,5), we have a walkway between two rooms.
+At (19,6), we have the start of the dining room.
+At (19,14), we have the start of the arcade.
+At (19,19), we have the end of the arcade.
+At (6,5), we have the start of the closet.
+
+Our closet is 6 x 7, that is 6 rows and 7 columns, and is therefore 42 tiles big.
